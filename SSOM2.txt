@@ -1,0 +1,136 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.SharePoint;
+
+namespace ConsoleApp3
+{
+    class Program
+    {
+        static string _url = "http://amit:2022/sites/practice/";
+        static void _GetSiteProp()
+        {
+            using (SPSite _Site = new SPSite(_url))
+            {
+                using (SPWeb _Web = _Site.OpenWeb())
+                {
+                    Console.WriteLine(_Web.Title);
+                }
+            }
+        }
+        static void _SetSiteProp()
+        {
+            using (SPSite _Site = new SPSite(_url))
+            {
+                using (SPWeb _Web = _Site.OpenWeb())
+                {
+                    _Web.Title = "Demo";
+                    _Web.Update();
+                    Console.WriteLine( _Web.Title);
+                }
+            }
+        }
+        static void _GetLists()
+        {
+            using (SPSite _Site = new SPSite(_url))
+            {
+                using (SPWeb _Web = _Site.OpenWeb())
+                {
+                    SPListCollection _Lists = _Web.Lists;
+                    foreach (SPList _List in _Lists)
+                        if (!_List.Hidden)
+                        {
+                            Console.WriteLine(_List.Title);
+                        }
+                }
+            }
+
+        }
+        static void _GetList()
+        {
+            using (SPSite _Site = new SPSite(_url))
+            {
+                using (SPWeb _Web = _Site.OpenWeb())
+                {
+                    SPList _Lists = _Web.Lists["Employee"];
+                    SPListItemCollection _items = _Lists.GetItems();
+                    foreach (SPListItem _Item in _items)
+                    {
+                        Console.WriteLine(_Item.ID + "-" + Convert.ToString(_Item["Title"]));
+                    }
+                }
+            }
+        }  
+
+        static void _AddItem()
+        {
+            using (SPSite _Site = new SPSite(_url))
+            {
+                using (SPWeb _Web = _Site.OpenWeb())
+                {
+                    SPList _Lists = _Web.Lists["Student"];
+                    SPListItem _Item = _Lists.AddItem();
+                    _Item["Title"] = "Avi";
+                    _Item["Add"] = "abc";
+                    _Item["number"] = "123";
+                    _Item.Update();
+                }
+
+
+            }
+        }
+
+        static void UpdateItem()
+        {
+            using (SPSite _Site = new SPSite(_url))
+            {
+                using (SPWeb _Web = _Site.OpenWeb())
+                {
+                    SPList _Lists = _Web.Lists["Student"];
+
+                    SPListItem _Item = _Lists.GetItemById(7);
+                    _Item["Title"] = "Sumit";
+                    _Item["Add"] = "Delhi";
+
+                    _Item.Update();
+                }
+
+
+            }
+        }
+      
+        static void _DeleteItem()
+        {
+            using (SPSite _Site = new SPSite(_url))
+            {
+                using (SPWeb _Web = _Site.OpenWeb())
+                {
+                    SPList _Lists = _Web.Lists["Student"];
+                    SPListItemCollection _items = _Lists.GetItems();
+                    SPListItem _Item = _Lists.GetItemById(4);
+                    _Item["Title"] = " number";
+                    _Item.Delete();
+                }
+            }
+        }
+       
+       
+
+
+        static void Main(string[] args)
+        {
+            // _GetSiteProp();
+            // _SetSiteProp();
+            // _GetLists();
+            //_GetList();
+            //_AddItem();
+            //UpdateItem();
+            _DeleteItem();
+            Console.WriteLine("Done");
+            Console.ReadLine();
+        }
+    }  
+    
+}

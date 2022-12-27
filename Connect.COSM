@@ -1,0 +1,30 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.SharePoint.Client;
+
+namespace CSOM_SharePoint
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            using (ClientContext ctx =  new ClientContext("https://3b7w3m.sharepoint.com/sites/TecyPartner.com/"))
+            {
+                ctx.AuthenticationMode = ClientAuthenticationMode.Default;
+                SecureString securePassword = new SecureString();
+                foreach (char c in "DgtechBandy11@")
+                    securePassword.AppendChar(c);
+                ctx.Credentials = new SharePointOnlineCredentials("vandana@3b7w3m.onmicrosoft.com", securePassword);
+                Web web = ctx.Web;
+                ctx.Load(web);
+                ctx.ExecuteQuery();
+                Console.WriteLine("The Web site title: " + web.Title);
+                Console.ReadLine();
+            }
+        }
+    }
+}

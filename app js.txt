@@ -1,0 +1,225 @@
+
+function UpdateSelectedItemChanged() {
+    $('#UpdateTitle').val($('#UpdateItems :selected').text());
+}
+
+// occurs when a user clicks the create button
+function Create() {
+    var listName = $('#listName').val();
+    var url = _spPageContextInfo.siteAbsoluteUrl;
+    var title = $('#Create_Title').val();
+    createListItemWithDetails(listName, url, title, function (data) {
+        alert("Item has been created. Updating available items");
+        Read();
+    }, function () {
+        alert("Ooops, an error occured. Please try again");
+    });
+}
+// occurs when a user clicks the read button
+function Read() {
+    //clear both text boxes 
+    $('#UpdateTitle').val('');
+    $('#Create_Title').val('');
+
+    var listName = $('#listName').val();
+    var url = _spPageContextInfo.siteAbsoluteUrl;
+
+    getListItems(listName, url, function (data) {
+        var items = data.d.results;
+
+        // remove all of the previous items
+        $('#UpdateItems option').each(function (index, option) { $(option).remove(); });
+        $('#DeleteItems option').each(function (index, option) { $(option).remove(); });
+
+        // Add all the new items
+        for (var i = 0; i < items.length; i++) {
+            $('#UpdateItems').append(new Option(items[i].Title, items[i].Id, false, false));
+            $('#DeleteItems').append(new Option(items[i].Title, items[i].Id, false, false));
+
+        }
+    }, function (data) {
+        alert(JSON.stringify( data));
+        alert("Ooops, an error occured. Please try again");
+    });
+}
+
+// occurs when a user clicks the update button
+function Update() {
+    var listName = $('#listName').val();
+    var url = _spPageContextInfo.siteAbsoluteUrl;
+    var itemId = $('#UpdateItems').val();
+    var title = $('#UpdateTitle').val();
+    updateListItem(itemId, listName, url, title, function () {
+        alert("Item updated, refreshing avilable items");
+        Read();
+    }, function () {
+        alert("Ooops, an error occured. Please try again");
+    });
+
+}
+
+// occurs when a user clicks the delete button
+function Delete() {
+    var listName = $('#listName').val();
+    var url = _spPageContextInfo.siteAbsoluteUrl;
+    var itemId = $('#DeleteItems').val();
+    deleteListItem(itemId, listName, url, function () {
+        alert("Item deleted, refreshing avilable items");
+        Read();
+    }, function (error) {
+        alert(JSON.stringify(error));
+    });
+}
+
+// Delete Operation
+// itemId: the id of the item to delete
+// listName: The name of the list you want to delete the item from
+// siteurl: The url of the site that the list is in. 
+// success: The function to execute if the call is sucesfull
+// failure: The function to execute if the call fails
+function deleteListItem(itemId, listName, siteUrl, success, failure) {
+    getListItemWithId(itemId, listName, siteUrl, function (data) {
+        $.ajax({
+            url: data.__metadata.uri,
+            type: "POST",
+            headers: {
+                "Accept": "application/json;odata=verbose",
+                "X-Http-Method": "DELETE",
+                "X-RequestDigest": $("#__REQUESTDIGEST").val(),
+                "If-Match": data.__metadata.etag
+            },
+            success: function (data) {
+                success(data);
+            },
+            error: function (data) {
+                failure(data);
+            }
+        });
+    },
+   function (data) {
+       failure(data);
+   });
+}
+
+
+// Update Operation
+// listName: The name of the list you want to get items from
+// siteurl: The url of the site that the list is in. // title: The value of the title field for the new item
+// itemId: the id of the item to update
+// success: The function to execute if the call is sucesfull
+// failure: The function to execute if the call fails
+function updateListItem(itemId, listName, siteUrl, title, success, failure) {
+    var itemType = GetItemTypeForListName(listName);
+
+    var item = {
+        "__metadata": { "type": itemType },
+        "Title": title
+    };
+
+    getListItemWithId(itemId, listName, siteUrl, function (data) {
+        $.ajax({
+            url: data.__metadata.uri,
+            type: "POST",
+            contentType: "application/json;odata=verbose",
+            data: JSON.stringify(item),
+            headers: {
+                "Accept": "application/json;odata=verbose",
+                "X-RequestDigest": $("#__REQUESTDIGEST").val(),
+                "X-HTTP-Method": "MERGE",
+                "If-Match": data.__metadata.etag
+            },
+            success: function (data) {
+                success(data);
+            },
+            error: function (data) {
+                failure(data);
+            }
+        });
+    }, function (data) {
+        failure(data);
+    });
+}
+
+// READ SPECIFIC ITEM operation
+// itemId: The id of the item to get
+// listName: The name of the list you want to get items from
+// siteurl: The url of the site that the list is in. 
+// success: The function to execute if the call is sucesfull
+// failure: The function to execute if the call fails
+function getListItemWithId(itemId, listName, siteurl, success, failure) {
+    //var url = siteurl + "/_api/web/lists/getbytitle('" + listName + "')/items?$filter=((Title eq '" + itemId + "') and (Location eq '" + loc + "'))";
+    //var url = siteurl + "/_api/web/lists/getbytitle('" + listName + "')/items?$filter=Title eq " + itemId +" &  select=title,description,assignto\\Email"
+    var url = siteurl + "/_api/web/lists/getbytitle('" + listName + "')/items?$filter=Id eq " + itemId;
+    $.ajax({
+        url: url,
+        method: "GET",
+        headers: { "Accept": "application/json; odata=verbose" },
+        success: function (data) {
+            if (data.d.results.length == 1) {
+                success(data.d.results[0]);
+            }
+            else {
+                failure("Multiple results obtained for the specified Id value");
+            }
+        },
+        error: function (data) {
+            failure(data);
+        }
+    });
+}
+
+// READ operation
+// listName: The name of the list you want to get items from
+// siteurl: The url of the site that the list is in. 
+// success: The function to execute if the call is sucesfull
+// failure: The function to execute if the call fails
+function getListItems(listName, siteurl, success, failure) {
+    $.ajax({
+        url: siteurl + "/_api/web/lists/getbytitle('" + listName + "')/items",
+        method: "GET",
+        headers: { "Accept": "application/json; odata=verbose" },
+        success: function (data) {
+            success(data);
+        },
+        error: function (data) {
+            failure(data);
+        }
+    });
+}
+
+// CREATE Operation
+// listName: The name of the list you want to get items from
+// siteurl: The url of the site that the list is in. // title: The value of the title field for the new item
+// success: The function to execute if the call is sucesfull
+// failure: The function to execute if the call fails
+function createListItemWithDetails(listName, siteUrl, title, success, failure) {
+
+    var itemType = GetItemTypeForListName(listName);
+    var item = {
+        "__metadata": { "type": itemType },
+        "Title": title
+    };
+
+    $.ajax({
+        url: siteUrl + "/_api/web/lists/getbytitle('" + listName + "')/items",
+        type: "POST",
+        contentType: "application/json;odata=verbose",
+        data: JSON.stringify(item),
+        headers: {
+            "Accept": "application/json;odata=verbose",
+            "X-RequestDigest": $("#__REQUESTDIGEST").val()
+        },
+        success: function (data) {
+            success(data);
+        },
+        error: function (data) {
+            failure(data);
+        }
+    });
+}
+// Getting the item type for the list
+function GetItemTypeForListName(name) {
+
+    return "SP.Data." + name.charAt(0).toUpperCase() + name.slice(1) + "ListItem";
+
+}

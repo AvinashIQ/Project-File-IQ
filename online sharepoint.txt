@@ -1,0 +1,47 @@
+using Microsoft.SharePoint.Client;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security;
+using System.Text;
+using System.Threading.Tasks;
+namespace ConsoleApp1
+{
+class Program
+{
+static void Main(string[] args)
+{
+using (ClientContext clientContext = new ClientContext("Sharepoint list URL"))
+{
+string Uname = "Username";
+string password = "Password";
+SecureString Securepasseord = GetSecureString(password);
+clientContext.Credentials = new SharePointOnlineCredentials(Uname, Securepasseord); clientContext.ExecuteQuery();
+
+clientContext.ExecuteQuery();
+
+List oList = clientContext.Web.Lists.GetByTitle("Target List Name");
+
+//clientContext.LoadQuery();
+clientContext.ExecuteQuery();
+
+ListItemCreationInformation listCreationInformation = new ListItemCreationInformation();
+ListItem oListItem = oList.AddItem(listCreationInformation);
+
+oListItem["Client"] = "John";
+oListItem["City"] = "New York";
+oListItem["Company"] = "ZXY";
+
+
+
+oListItem.Update();
+clientContext.ExecuteQuery();
+}
+}
+private static SecureString GetSecureString(String Password)
+{
+SecureString oSecurePassword = new SecureString(); foreach (Char c in Password.ToCharArray()) { oSecurePassword.AppendChar(c); }
+return oSecurePassword;
+}
+}
+}

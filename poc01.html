@@ -1,0 +1,42 @@
+<script src="https://zfccj.sharepoint.com/sites/Akwebsite/SiteAssets/mynew_poc/jquery-3.6.1.js"></script>
+<script type="text/javascript" src="https://zfccj.sharepoint.com/sites/Akwebsite/SiteAssets/mynew_poc/mynewpoc.js">
+</script>
+<h1>SharePointIQ REST API's Example CRUD Operations</h1>
+
+<div>
+	<span>List Name</span>
+	<span>
+
+            <input type="text" id="listName" /></span>
+</div>
+<h2>Create</h2>
+<div>Enter some text in the field below and click create to create a new list item with the specified text as its title.
+</div>
+<div>
+	<span>First Name</span> <br>
+	<span>
+            <input type="text" id="Create_Title" /></span><br>
+	<span>Last Name</span><br>
+	<span>
+                <input type="text" id="lname" /></span><br>
+	<span>City</span><br>
+	<span>
+                    <select id="city" >  
+                      <option value="0">Select</option>  
+                    </select> <br>
+                    <span>DOB</span><br>
+	<span>
+                        <input type="date" id="dob" /></span>
+	<span>
+           
+    <input type="button" id="Create_Submit" value="Create" onclick="Create();" /></span>
+</div>
+<input type="button" id="btntable" value="List Data"/>
+<br/><br/>
+<table id='tableCars' style="width: 100%;" border="1 px">
+<tr>
+<td>
+<div id="resultsTable" style="width: 100%"></div>
+</td>
+</tr>
+</table>

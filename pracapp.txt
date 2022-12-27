@@ -1,0 +1,52 @@
+function Create(){
+   var listname =$('#listname').val();
+   var url = _spPageContextInfo.siteAbsoluteUrl;
+   var title = $('Create_title').val();
+   CreateListItemWithDetails(listname,url,title,function(data){
+       alert("Item has been created.Updating avilable items");
+       Read();
+   }, function (){
+       alert("Ooops,an error occured.Please try again");
+   });
+}
+
+
+CreateListItemWithDetails(listname,siteUrl,title,success,failure){
+   
+   var itemType = GetItemTypeForListName(listname);
+   var item = {
+      "__metadata" : {"type": itemtype },
+      "Title" : title
+ };
+ 
+ $ajax({
+   
+     url:siteUrl +"/_api/web/lists/getbytitle('" + listname +"')/items",
+     type: "Post",
+     contentType: "application/json;odata=verbose",
+     data: JSON.stringify(item),
+     headers:{
+         "Accept" : "application/json;odata=verbose",
+         "X-RequestDigest":$("#__REQUESTDIGEST").val()
+     },
+     success : function (data){
+          success(data);
+     },
+  });
+}
+
+function GetItemTypeForListName(name){
+      
+    return "SP.Data. +charAt(0).toUpperCase() + name.slice(1) + "ListItem";
+
+}
+
+
+
+
+
+
+
+
+
+   

@@ -1,0 +1,26 @@
+   check for version
+ node -v
+ npm -v
+After start process for SPFx
+ 
+ 
+1). npm install -g yo gulp
+
+We can get the version of Yeoman using the command:
+yo --version
+
+We can get the Gulp Version using the command:
+gulp –v
+
+2) npm install -g @microsoft/generator-sharepoint@latest
+
+3)npm view @microsoft/generator-sharepoint version
+ Restart Pc
+
+4)md (flder name)
+5)cd (flder name)//for enter in folder
+6)yo @microsoft/sharepoint
+7)gulp trust-dev-cert
+8)gulp serve
+
+

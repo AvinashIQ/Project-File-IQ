@@ -1,0 +1,59 @@
+
+    
+<script src="https://3bb1fs.sharepoint.com/sites/mysite/Shared%20Documents/jquery.js"></script>
+<script type='text/javascript'>
+$(document).ready(function(){
+debugger;
+var workEmail = "";
+var WorkPhone = "";
+var Department = "";
+var userDisplayName = "";
+var AccountName = "";
+$.ajax({
+url: _spPageContextInfo.webAbsoluteUrl + "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
+headers: { Accept: "application/json;odata=verbose" },
+success: function (data) {
+try {
+//Get properties from user profile Json response
+userDisplayName = data.d.DisplayName;
+AccountName = data.d.AccountName;
+var properties = data.d.UserProfileProperties.results;
+var count=data.d.UserProfileProperties.results.length;
+for (var i = 0; i < count; i++) {
+if (properties[i].Key == "WorkEmail") {
+workEmail = properties[i].Value;
+}
+if (properties[i].Key == "WorkPhone") {
+WorkPhone = properties[i].Value;
+}
+if (properties[i].Key == "Department") {
+Department = properties[i].Value;
+}
+}
+
+$('#AccountName').text(AccountName);
+$('#userDisplayName').text(userDisplayName);
+$('#WorkPhone').text(WorkPhone);
+$('#workEmail').text(workEmail);
+$('#Department').text(Department);
+} catch (err2) {
+//alert(JSON.stringify(err2));
+}
+},
+
+error: function (jQxhr, errorCode, errorThrown) {
+alert(errorThrown);
+}
+});
+});
+</script>
+
+<h2><strong>Employee Details</strong></h2>
+<br />
+AccountName <span id="AccountName"></span>
+DisplayName <span id="userDisplayName"></span>
+WorkPhone <span id="WorkPhone"></span>
+Email Address <span id="workEmail"></span>
+Department <span id="Department"></span>
+
+

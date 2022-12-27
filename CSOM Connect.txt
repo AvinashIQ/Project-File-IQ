@@ -1,0 +1,7 @@
+            using (ClientContext ctx = new ClientContext("https://tsinfo.sharepoint.com/sites/SPGuides/"))
+            {
+                ctx.AuthenticationMode = ClientAuthenticationMode.Default;
+                SecureString securePassword = new SecureString();
+                foreach (char c in "YourPassword")
+                    securePassword.AppendChar(c);
+                ctx.Credentials = new SharePointOnlineCredentials("bijay@tsinfo.onmicrosoft.com", securePassword);

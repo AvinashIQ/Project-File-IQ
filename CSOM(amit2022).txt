@@ -1,0 +1,182 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.SharePoint;
+using Microsoft.SharePoint.Client;
+
+
+
+namespace CSOM1
+{
+    class Program
+    {
+        static String _Url = "http://amit:2022";
+        static void GetSiteProp()
+        {
+            ClientContext context = new ClientContext(_Url);
+            Web web = context.Web;
+            context.Load(web);
+            context.ExecuteQuery();
+            Console.WriteLine("web Title:" + web.Title);
+        }
+        static void GetSetsiteProp()
+        {
+            ClientContext context = new ClientContext(_Url);
+            Web web = context.Web;
+            context.Load(web, w => w.Title, W => W.Description);
+            context.ExecuteQuery();
+            Console.WriteLine("Web Title:" + web.Title);
+            Console.WriteLine("Web Description:" + web.Description);
+        }
+
+        static void setSiteProp()
+        {
+            ClientContext context = new ClientContext(_Url);
+            Web web = context.Web;
+            web.Title = "Har Har Mahadev";
+            web.Description = "LOrd Shiv";
+            web.Update();
+            context.ExecuteQuery();
+            
+        }
+        static void CreateSubSite()
+        {
+            ClientContext context = new ClientContext(_Url);
+            WebCreationInformation Creation = new WebCreationInformation();
+            Creation.Url = "Site";
+            Creation.Title = "MySite";
+            Web newWeb = context.Web.Webs.Add(Creation);
+            context.Load(newWeb, w => w.Title);
+            context.ExecuteQuery();
+            Console.WriteLine("Done New Web Title:" + newWeb);
+
+        }
+        static void GetAllList()
+        {
+            ClientContext context = new ClientContext(_Url);
+            Web web = context.Web;
+            context.Load(web.Lists,
+                         lists => lists.Include(list => list.Title, // For each list, retrieve Title and Id. 
+                                                list => list.Id, list => list.BaseType));
+
+            
+            context.ExecuteQuery();
+            foreach(List list in web.Lists)
+                if(list.BaseType==BaseType.GenericList)
+                {
+                    Console.WriteLine(list.Title);
+                }
+        }
+        static void CreateList()
+        {
+            ClientContext context = new ClientContext(_Url);
+            Web web = context.Web;
+            ListCreationInformation creationInformation = new ListCreationInformation();
+            creationInformation.Title = "My List";
+            creationInformation.TemplateType = (int)ListTemplateType.Announcements;
+            List list = web.Lists.Add(creationInformation);
+            list.Description = "New Description";
+            list.Update();
+            context.ExecuteQuery();
+        }
+        static void DeleteList()
+        {
+            ClientContext context = new ClientContext(_Url);
+            Web web = context.Web;
+            List list = web.Lists.GetByTitle("My List");
+            list.DeleteObject();
+            context.ExecuteQuery();
+        }
+        static void AddField()
+        {
+            ClientContext context = new ClientContext(_Url);
+            List list = context.Web.Lists.GetByTitle("Employee");
+            Field field = list.Fields.AddFieldAsXml("<Field DisplayName='MyField' Type = 'Number'/>",
+                                                                    true, AddFieldOptions.DefaultValue);
+            FieldNumber fldNumber = context.CastTo<FieldNumber>(field);
+            fldNumber.MaximumValue = 100;
+            fldNumber.MinimumValue = 10;
+            fldNumber.Update();
+            context.ExecuteQuery();
+        }
+        static void GetAllField()
+        {
+            ClientContext context = new ClientContext(_Url);
+            List list = context.Web.Lists.GetByTitle("Employee");
+            context.Load(list.Fields);
+            context.ExecuteQuery();
+            foreach(Field field in list.Fields)
+              //  if(!field.Hidden)
+            {
+                Console.WriteLine(field.InternalName);
+            }
+        }
+        static void GetAllItem()
+        {
+            ClientContext context = new ClientContext(_Url);
+            List EmployeeList = context.Web.Lists.GetByTitle("Employee");
+            CamlQuery query = CamlQuery.CreateAllItemsQuery(100);
+
+            ListItemCollection items = EmployeeList.GetItems(query);
+            context.Load(items);
+            context.ExecuteQuery();
+            foreach (ListItem listItem in items)
+            {
+                // We have all the list item data. For example, Title. 
+
+                Console.WriteLine(Convert.ToString(listItem["Name"]));
+            }
+
+        }
+        static void CreateItem()
+        {
+            ClientContext context = new ClientContext(_Url);
+            List EmployeeList = context.Web.Lists.GetByTitle("Employee");
+        
+        ListItemCreationInformation itemCreateInfo = new ListItemCreationInformation();
+        ListItem newItem = EmployeeList.AddItem(itemCreateInfo);
+        newItem["Title"] = "2";
+            newItem["Name"] = "amit";
+            newItem.Update();
+            context.ExecuteQuery();  
+        }
+        static void UpdateItem()
+        {
+            ClientContext context = new ClientContext(_Url);
+            List EmployeeList = context.Web.Lists.GetByTitle("Employee");
+            ListItem listItem = EmployeeList.GetItemById(1);
+            listItem["Title"] = "1";
+            listItem["Name"] = "Avi";
+            listItem.Update();
+            context.ExecuteQuery();
+        }
+        static void DeleteItem()
+        {
+            ClientContext context = new ClientContext(_Url);
+            List EmployeeList = context.Web.Lists.GetByTitle("Employee");
+            ListItem listItem = EmployeeList.GetItemById(6);
+            listItem.DeleteObject();
+            context.ExecuteQuery();
+        }
+    static void Main(string[] args)
+        {
+            //GetSiteProp();
+            //GetSetsiteProp();
+            // setSiteProp();
+            // CreateSubSite();
+            // GetAllList();
+            // CreateList();
+            // DeleteList();
+            // AddField();
+            // GetAllField();
+            //  GetAllItem();
+            // CreateItem();
+            // UpdateItem();
+           // DeleteItem();
+             Console.WriteLine("Done");
+            Console.ReadLine();
+        }
+    }
+}
