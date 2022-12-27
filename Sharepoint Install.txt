@@ -1,0 +1,63 @@
+. First install windows Server
+
+
+2.Change the PC Name- SPIQ009
+
+3. Add Role And Feature
+
+	
+	1. First add only LAN Feature (For installing LAN Driver Configuration)
+
+	
+	2. Add Active Directory (2nd item) and then Next and Next and last select restart again.
+
+	
+	3. (Manage Deployment Configuration)Add  a new forest
+
+			
+		1. Root Domain NAme - spiq.com
+
+			
+		2. DSRM Add Password- (admin@123) And the confirm
+
+			
+		3. Next 
+
+			
+		4. Next Bios- SPiQ then Next and Next And wait....and install again Wait and install
+
+			
+		5. Close and restart.
+
+	
+		4. Select Application Server and  Web Server(IIS) and next and Next ...select Restart checkBox and Install.
+
+	
+		5. Add Role Feature Next Check Visual Studio 3.5 .NET Framework Next and Check Restart And Install. 
+..........windows Server Installtion Finish Here...........
+
+Next Step
+1. Install SQL Server
+
+
+Next Step
+1. Open b4_sharepoint_installation Folder
+   1. Open preq file folder
+	1. open dont install file Folder
+	2. Open 1_keep_in_server_only_install_auto file filder and Copy All 4 Files. And
+	3. Paste at  the Location----Local Disk C Drive...(Where Server Install)
+   2. Open Location----C:\Windows\System32 Here Select and Copy file "ServerManager" and paste Another Location with Changed Name "ServerManagerCMD" and copy it and paste it at the location "C:\Windows\System32".
+   3. Open "install-3rd-Download-Install Windows Server 2012 Prerequisites for SharePoint 2013" File Folder .
+	1. Right clck on file "Install-SP2013RolesFeatures" and run with Power Shell. its take automatic Restart.
+   
+   4. Open "App Fabric Command"file and Copy Text Command"\WindowsServerAppFabricSetup_x64.exe /i CacheClient","CachingService","CacheAdmin /gac" and paste it on Power shell and Click Enter.
+   5. Again Open preq file folder
+	1. open install-left-1st-SyncSetup_de.x64 file Folder
+	2.Run Four Files with Name:-
+		1.Microsoft Sync Framework
+		2.Microsoft Sync Framework SDK
+		3.Microsoft Sync Framework Services
+		4.Microsoft Sync Services for ADO
+		5.Istall WCF Services From "D:\b4_sharepoint_installation"
+   6. install all the Application File from folder "preq" one by one(9 Application) and its take restart one by one istallation
+   7.Open "SharePointServer_x64_en-us" and run Setup.
